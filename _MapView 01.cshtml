@@ -10,7 +10,7 @@
   //var mapSettings = AsDynamic(Content.Presentation.GoogleMaps, Settings.GoogleMaps);
   //var googleApikey = Kit.SecureData.Parse(mapSettings.ApiKey).Value;
 
-  var googleApikey = Header.ApiKey ?? "AIzaSyBgSAoSiD7xVP9dNZLhNy6PgIwKTYSSA9k";
+  var googleApikey = Header.ApiKey;
   var googleMapDomId = "app-sexy-google-map-js-" + @CmsContext.Module.Id; 
   
   var gps = AsDynamic(Header.GPS);

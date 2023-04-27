@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<SexyContent FileVersion="07.00.00" MinimumRequiredVersion="07.04.02" ModuleVersion="14.07.03" ExportDate="2023-04-27T01:48:10.2789298-03:00">
+<SexyContent FileVersion="07.00.00" MinimumRequiredVersion="07.04.02" ModuleVersion="14.07.03" ExportDate="2023-04-27T02:17:20.8473284-03:00">
   <Header>
     <App Guid="81b3e8a5-9819-472a-a300-f0eb8e3d2d06" />
     <Language Default="pt-br" />
@@ -1038,9 +1038,52 @@
         </Attribute>
         <Attribute StaticName="ApiKey" Type="String" IsTitle="false">
           <Entity TargetType="2" AssignmentObjectType="EAV Field Properties" AttributeSetStaticName="@All" AttributeSetName="@All" EntityGUID="1ab68f04-a440-4b1a-9106-154ea1a25e66" Json="True" KeyNumber="1647">
-            <Value Key="InputType" Value="string-default" Type="String" />
-            <Value Key="Name" Value="ApiKey" Type="String" />
-            <Value Key="VisibleInEditUI" Value="True" Type="Boolean" />
+            <Value Key="CustomJavaScript" Value="" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="DefaultValue" Value="AIzaSyC-lVjW65jKXTHkDbiOjKp8jAhJDjqggyM" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="Disabled" Value="False" Type="Boolean">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="DisableTranslation" Value="False" Type="Boolean">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="InputType" Value="string-default" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="Name" Value="ApiKey" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="Notes" Value="" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="Placeholder" Value="" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="Required" Value="False" Type="Boolean">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="ValidationRegExJavaScript" Value="" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="VisibleInEditUI" Value="True" Type="Boolean">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+          </Entity>
+          <Entity TargetType="2" AssignmentObjectType="EAV Field Properties" AttributeSetStaticName="@String" AttributeSetName="@String" EntityGUID="baca223a-b4e8-4048-8ae1-4766cc60fceb" Json="True" KeyNumber="1647">
+            <Value Key="DropdownValues" Value="" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+            <Value Key="InputType" Value="" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
+          </Entity>
+          <Entity TargetType="2" AssignmentObjectType="EAV Field Properties" AttributeSetStaticName="@string-default" AttributeSetName="@string-default" EntityGUID="ae381561-ede8-4d6b-a242-4f21632b151e" Json="True" KeyNumber="1647">
+            <Value Key="InputFontFamily" Value="" Type="String">
+              <Dimension DimensionID="3" ReadOnly="false" />
+            </Value>
           </Entity>
         </Attribute>
       </Attributes>
@@ -1127,7 +1170,7 @@
       <Value Key="SupportsAjaxReload" Value="False" Type="Boolean">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
-      <Value Key="Version" Value="00.00.15" Type="String">
+      <Value Key="Version" Value="00.00.16" Type="String">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
     </Entity>
@@ -1245,7 +1288,7 @@
       <Value Key="Icon" Value="https://icon-library.com/images/google-maps-bus-icon/google-maps-bus-icon-3.jpg" Type="Hyperlink">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
-      <Value Key="Mail" Value="aquidaba@ba.domain.br" Type="String">
+      <Value Key="Mail" Value="aquidaba@ba.senac.br" Type="String">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
       <Value Key="Pitch" Value="12" Type="Number">
@@ -1257,7 +1300,7 @@
       <Value Key="Tel" Value="(71) 3186-4000" Type="String">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
-      <Value Key="Title" Value="Unidade Móvel Aquidabã" Type="String">
+      <Value Key="Title" Value="Unidade Móvel do Senac Aquidabã" Type="String">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
       <Value Key="ZipCode" Value="40025-000" Type="String">
@@ -1291,7 +1334,7 @@
       </Value>
     </Entity>
     <Entity TargetType="1" AssignmentObjectType="Default" AttributeSetStaticName="3168c0b7-9999-4aa8-9ada-773890339e58" AttributeSetName="LocationMap" EntityGUID="4da6e2bd-3bf4-40b7-b1fa-b1bb83df0cc1">
-      <Value Key="ApiKey" Value="AIzaSyBgSAoSiD7xVP9dNZLhNy6PgIwKTYSSA9k" Type="String">
+      <Value Key="ApiKey" Value="AIzaSyC-lVjW65jKXTHkDbiOjKp8jAhJDjqggyM" Type="String">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
       <Value Key="City" Value="Salvador" Type="String">
@@ -1335,10 +1378,10 @@
       </Value>
     </Entity>
     <Entity TargetType="1" AssignmentObjectType="Default" AttributeSetStaticName="f5764f60-2621-4a5d-9391-100fbe664640" AttributeSetName="⚙️GoogleMaps" EntityGUID="bc582709-9683-4f62-9d60-af278aee6565" Json="True">
-      <Value Key="ApiKey" Value="AIzaSyBgSAoSiD7xVP9dNZLhNy6PgIwKTYSSA9k" Type="String">
+      <Value Key="ApiKey" Value="AIzaSyC-lVjW65jKXTHkDbiOjKp8jAhJDjqggyM" Type="String">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
-      <Value Key="MarkerIcon" Value="" Type="Hyperlink">
+      <Value Key="MarkerIcon" Value="https://icon-library.com/images/google-maps-bus-icon/google-maps-bus-icon-3.jpg" Type="Hyperlink">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
       <Value Key="SettingsIdentifier" Value="GoogleMaps" Type="String">
@@ -1433,6 +1476,15 @@
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
       <Value Key="ZipCode" Value="40026280" Type="String">
+        <Dimension DimensionID="3" ReadOnly="false" />
+      </Value>
+    </Entity>
+    <Entity TargetType="1" AssignmentObjectType="Default" AttributeSetStaticName="813a3cb7-1a89-4477-bdfe-8863ab3ae59a" AttributeSetName="SettingsSystem" EntityGUID="b55224a9-80fc-4fa3-95f4-89199acf1eba" Json="True">
+      <Value Key="GoogleMaps" Value="bc582709-9683-4f62-9d60-af278aee6565" Type="Entity" />
+      <Value Key="SettingsEntityScope" Value="" Type="String">
+        <Dimension DimensionID="3" ReadOnly="false" />
+      </Value>
+      <Value Key="Title" Value="System Settings" Type="String">
         <Dimension DimensionID="3" ReadOnly="false" />
       </Value>
     </Entity>
