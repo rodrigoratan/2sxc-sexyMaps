@@ -1,0 +1,298 @@
+@inherits Custom.Hybrid.Razor14
+@using ToSic.Razor.Blade;
+@using ToSic.Sxc.Services; 
+@{
+  Kit.Page.Activate("turnOn");
+  
+  //TODO: Use GoogleApiKey from App/System Settings instead of Header. Code below is from 2sxc Location Content App:
+  // They Google API key is in the App-Settings. See instructions: https://azing.org/2sxc/r/ApSwlItl
+  // The Preset-data is encrypted, so we must decrypt it to use
+  //var mapSettings = AsDynamic(Content.Presentation.GoogleMaps, Settings.GoogleMaps);
+  //var googleApikey = Kit.SecureData.Parse(mapSettings.ApiKey).Value;
+
+  var googleApikey = Header.ApiKey ?? "AIzaSyBgSAoSiD7xVP9dNZLhNy6PgIwKTYSSA9k";
+  var googleMapDomId = "app-sexy-google-map-js-" + @CmsContext.Module.Id; 
+  
+  var gps = AsDynamic(Header.GPS);
+  var lat = gps.Latitude ?? 0;
+  var lng = gps.Longitude ?? 0;
+  
+  var zoomLevel = Header.ZoomLevel ?? 13;
+  var tiltLevel = Header.Tilt ?? 45;
+  var mapType = Header.MapType ?? "roadmap";
+  var gestureHandling = Header.GestureHandling ?? "auto";
+  var markerMode = Header.MarkerMode ?? "CenterFocus";
+}
+
+<style> 
+  #@googleMapDomId { height: 62%; width: 100%; } 
+  .gm-style-mot { text-align:center; } // to center scroll message overlay 
+/*.gm-style-pbc { opacity: 0 !important; }*/ // to hide scroll message overlay
+
+  p { text-align: center !important;}
+  .streetViewFrame { width: 600px !important; }
+  .card img { height: auto; }
+  .btn-custom {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=@googleApikey&callback=initMap&v=weekly"
+        defer></script>
+
+<script>
+  let map;  
+  let  bounds;
+
+  function initMap() {
+    bounds = new google.maps.LatLngBounds();
+    map = new google.maps.Map(document.getElementById('@googleMapDomId'), {
+      zoom: @zoomLevel,
+      minZoom: @zoomLevel - 2,
+      maxZoom: @zoomLevel + 2,
+      center: new google.maps.LatLng(@lat.ToString().Replace(',','.'), @lng.ToString().Replace(',','.')),
+      mapTypeId: '@mapType',
+      tilt: @tiltLevel,
+      options: {
+        gestureHandling: '@gestureHandling',
+        zoomControl: true
+      }        
+    });    
+    DrawMarkers();
+  }
+  window.initMap = initMap;
+</script>
+
+<div class="container mt-3" >
+  <div class="col-lg-12 sessao">
+    <h5>Unidades Senac</h5>
+    <h1><span class="sessao-negrito" @Edit.TagToolbar(Header)>@Header.MapName</span></h1>
+    <h3 class="descricao" @Edit.TagToolbar(Content.Presentation)>@Html.Raw(Header.Description)</h3>
+  </div>   
+  <div class="row justify-content-center justify-content-around">
+    @foreach (var location in AsList(Data)) {
+      var gpsItem   = AsDynamic(location.GPS);
+      var gpsLat    = gpsItem != null && gpsItem.Latitude  != null ? gpsItem.Latitude.ToString().Replace(',', '.') : "0";
+      var gpsLong   = gpsItem != null && gpsItem.Longitude != null ? gpsItem.Longitude.ToString().Replace(',', '.') : "0";
+      var svFoV     = location.FoV     != null ? location.FoV.ToString()     : "90";
+      var svHeading = location.Heading != null ? location.Heading.ToString() : "110";
+      var svPitch   = location.Pitch   != null ? location.Pitch.ToString()   : "0";
+      var streetViewUrlStatic = "https://maps.googleapis.com/maps/api/streetview?size=600x300&location=" + gpsLat + "," + gpsLong + "&fov="+svFoV+"&heading="+svHeading+"&pitch="+svPitch+"&key=" + googleApikey;
+      <div class="col-xs-11 col-sm-11 col-md-6 col-lg-6 col-xl-4 col-xxl-4 mt-3" id="cards">
+        <div class="card mb-4" @Edit.TagToolbar(location) data-marker-index="@location.Index">
+          <img src="@streetViewUrlStatic" class="card-img-top" alt="@location.Title" style="height:auto;">
+          <div class="card-body">
+            <div class="card-title fw-bold mb-3" style="margin-top: -100px; margin-left: 0px; margin-right: 0px; padding: 0px; padding-top: 15px">
+              <a href="javascript:scrollToMap('cards');" class="btn btn-primary btn-custom"><img src="@location.Icon" style="height:32px;" /> @location.Title</a>
+            </div>
+            <div class="card-subtitle mb-2 text-muted" style="padding: 20px 20px 0px 20px;min-height:65px !important;">
+              @location.Street, @location.City<br>
+              <!-- @Html.Raw(location.Description) -->
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>
+
+<div>
+  <a name="@googleMapDomId"></a>
+  <div id="@googleMapDomId" @Edit.TagToolbar(Content)></div> 
+</div>
+
+<script>  
+  var lastInfoWindow = null;
+  var lastMarkerPosition = null;
+  var globalMarkers = [];
+
+  function scrollToMap(origin) {
+    const cardsElement = document.getElementById('cards');
+    const mapElement = document.getElementById('@googleMapDomId');
+    var y = 0;
+    if (window.innerWidth < 1200) 
+    {
+      const yMapOffset = -90; // Ajuste para o posicionamento do mapa na tela
+      y = mapElement.getBoundingClientRect().top + window.pageYOffset + yMapOffset;
+    } 
+    else if (origin == 'map')
+    {
+      const yMapOffset = -390; // Ajuste para o posicionamento do mapa na tela
+      y = mapElement.getBoundingClientRect().top + window.pageYOffset + yMapOffset;
+    } 
+    else if (origin == 'cards') 
+    {
+      const yCardOffset = -85; // Ajuste para o posicionamento do mapa na tela
+      y = cardsElement.getBoundingClientRect().top + window.pageYOffset + yCardOffset;
+    }
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth'
+    });
+  }
+
+  function DrawMarkers()
+  {
+    var markers = [];
+    var customIcon = { url: '@Header.Icon' };
+    var markerMode = '@Header.MarkerMode';
+
+    if (customIcon.url.length === 0)
+        customIcon.url = 'https://icon-library.com/images/google-maps-bus-icon/google-maps-bus-icon-3.jpg';
+
+    @{
+      foreach (var location in AsList(Data)) {
+        var gpsItem   = AsDynamic(location.GPS);
+        var gpsLat    = gpsItem != null && gpsItem.Latitude !=null ? gpsItem.Latitude.ToString().Replace(',', '.') : "0";
+        var gpsLong   = gpsItem != null && gpsItem.Longitude != null ? gpsItem.Longitude.ToString().Replace(',', '.') : "0";
+        var svFoV     = location.FoV     != null ? location.FoV.ToString()     : "90";
+        var svHeading = location.Heading != null ? location.Heading.ToString() : "110";
+        var svPitch   = location.Pitch   != null ? location.Pitch.ToString()   : "0";
+        var language  = "pt-br";
+
+        var directionurl = gpsItem.Longitude > 0
+        // if we have coordinates, use them
+        ? "https://www.google.com/maps/dir/" + Kit.Convert.ForCode(gpsLat) + "," + Kit.Convert.ForCode(gpsLong)
+        // otherwise use the address
+        : "https://maps.google.com/maps?daddr="
+          + (location.Street + " " + location.ZipCode + " " + location.City + " " + location.Country)
+            .Replace(" ", "+")
+          + "&amp;saddr=&amp;f=d&amp;hl=" + language + "&amp;ie=UTF8&amp;z=16";
+
+        // var streetViewUrlStatic = "https://maps.googleapis.com/maps/api/streetview?size=600x300&location=" + gpsLat + "," + gpsLong + "&fov="+gpsItem.FoV+"&heading="+gpsItem.Heading+"&pitch="+gpsItem.Pitch+"&key=" + googleApikey; // unused yet
+
+        var streetViewUrl = "https://www.google.com/maps/embed/v1/streetview?";
+        var streetViewParams = "location=" + gpsLat + ',' + gpsLong + "&heading="+svHeading+"&pitch="+svPitch+ "&key="+ googleApikey;
+        var streetViewIframe = "<iframe src=\"" + streetViewUrl + streetViewParams + "\" class=\"streetViewFrame\" style=\"width: 30vw;height:15rem;\"></iframe>";
+
+        @:bounds.extend(new google.maps.LatLng(@gpsLat, @gpsLong));
+        @:markers.push({
+        @:    marker: new google.maps.Marker({
+        @:        position: new google.maps.LatLng(@gpsLat, @gpsLong),
+        @:        map: map,
+        @:        icon: customIcon.url,
+        @:        title: '@Html.Raw(location.Title)'
+        @:    }),
+        @:    infoWindow: new google.maps.InfoWindow({
+        @:        content: '<div><h6 class=fw-bold>@location.Title</h6><strong>@location.Street, @location.City</strong> <a href="@directionurl">obter direções</a><br><br>@Html.Raw(streetViewIframe)</div>'
+        @:    }),
+        @:    markerIcon: '@location.Icon'
+        @:});
+
+      //@:map.fitBounds(bounds); // uncomment if you want it to override your 'default' zoomlevel (min and max zoom level still apply)
+        @:scrollToMap('map');
+      }
+    }
+    
+    for (var i = 0; i < markers.length; i++) {
+      (function () {
+        var marker = markers[i].marker;
+        var infoWindow = markers[i].infoWindow;
+        var isOpen = markers[i].isOpen;
+        var markerIcon = markers[i].markerIcon;
+        if (markerIcon.length === 0) markerIcon = customIcon.url;
+        
+        // set the icon here because if i tried to pass newIcon on the marker it wont show!
+        var newIcon = {
+          url: markerIcon,
+          //scaledSize: new google.maps.Size(110, 142),
+          //origin: new google.maps.Point(0, 0),
+          //anchor: new google.maps.Point(55, 142)
+
+          scaledSize: new google.maps.Size(55, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(35, 71)
+        };
+        marker.setIcon(newIcon);
+
+        //alternate visibility / alternar a visibilidade apenas do marker clicado
+        if (markerMode == "ToggleVisibility") {
+            marker.addListener('click', function() {
+              if (isOpen) {
+                infoWindow.close();
+                isOpen = false;
+              } else {
+                infoWindow.open(map, marker);
+                isOpen = true;
+              }
+            });
+        } 
+        else // if(markerMode == "CenterFocus") // 'default when not set'
+        {
+          // Para fechar os outros markers abertos e centralizar
+          marker.addListener('click', function() {
+            // Fecha o último infoWindow aberto (se houver)
+            if (lastInfoWindow != null) {
+              lastInfoWindow.close();
+            }
+            // Open infoWindow when clicked / Abre a janela de informação do marcador clicado
+            infoWindow.open(map, marker);
+            // Stores current marker position / Armazena a posição do marcador clicado
+            lastMarkerPosition = marker.getPosition();
+            // Stores current infoWindow / Armazena a janela de informação aberta atualmente
+            lastInfoWindow = infoWindow;
+            // Center the map on clicked position / Centraliza o mapa na posição do marcador clicado
+            map.panTo(lastMarkerPosition);
+          });
+        }
+        marker.isOpen = isOpen;
+
+        //Espera o infoWindow ser aberto
+        google.maps.event.addListener(infoWindow, 'domready', function() {
+          //selecione o div gm-style-iw-d que envolve o iframe
+          var iwOuter = $('.gm-style-iw-d');
+
+          //selecione o iframe dentro do div
+          var iwIframe = iwOuter.find('iframe');
+
+          //verifique se o tamanho do iframe é maior que o tamanho do div
+          if (iwIframe.height() > iwOuter.height()) {
+            //esconda o iframe
+            iwIframe.css({'display': 'none'});
+          }
+        });
+
+      })();      
+    }
+    globalMarkers = markers;
+  }
+
+  // Function to activate the related marker when you click in a card
+  // Função para ativar o marcador correspondente no mapa ao clicar no card
+  function activateMarker(index) {
+    if (globalMarkers[index]) {
+      // Feche o último infoWindow aberto (se houver)
+      if (lastInfoWindow != null) {
+        lastInfoWindow.close();
+      }
+      // Open infoWindow when clicked / Abra a janela de informação do marcador clicado
+      globalMarkers[index].infoWindow.open(map, globalMarkers[index].marker);
+      // Stores current marker position / Armazene a posição do marcador clicado
+      lastMarkerPosition = globalMarkers[index].marker.getPosition();
+      // Stores current infoWindow / Armazene a janela de informação aberta atualmente
+      lastInfoWindow = globalMarkers[index].infoWindow;
+      // Center the map on clicked position / Centralize o mapa na posição do marcador clicado
+      map.panTo(lastMarkerPosition);
+    }
+  }
+
+  // Add click event on cards
+  document.querySelectorAll('.card').forEach(function (card, index) {
+    card.addEventListener('click', function () {
+      activateMarker(index);
+      scrollToMap('cards');
+    });
+  });
+
+  window.addEventListener('resize', function() {
+    // Remove todos os marcadores do mapa
+    for (let i = 0; i < globalMarkers.length; i++) {
+      globalMarkers[i].marker.setMap(null);
+    }
+    // chama novamente a função DrawMarkers para inserir os marcadores de volta no mapa
+    DrawMarkers();
+  });
+</script>
